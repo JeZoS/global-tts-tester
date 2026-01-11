@@ -1,0 +1,5 @@
+{
+  "name": "Global TTS Tester",
+  "description": "A specialized tool to test Text-to-Speech generation across multiple languages using the zinterview API.",
+  "requestFramePermissions": []
+}
