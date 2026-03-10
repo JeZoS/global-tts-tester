@@ -38,6 +38,10 @@ const App: React.FC = () => {
       setError("Please enter some text to convert.");
       return;
     }
+    if (!langCode.trim()) {
+      setError("Please select or enter a valid language code.");
+      return;
+    }
     if (!apiUrl.trim()) {
       setError("API Endpoint URL cannot be empty.");
       return;
