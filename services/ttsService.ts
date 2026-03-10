@@ -1,6 +1,6 @@
 import { AudioResponse } from '../types';
 
-export const generateSpeech = async (text: string, langCode: string, voice: string, apiUrl: string): Promise<AudioResponse> => {
+export const generateSpeech = async (text: string, langCode: string, voice: string, apiUrl: string, customParams?: Record<string, any>): Promise<AudioResponse> => {
   try {
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -11,6 +11,7 @@ export const generateSpeech = async (text: string, langCode: string, voice: stri
         text,
         langCode,
         voice,
+        ...(customParams || {}),
       }),
     });
 

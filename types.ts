@@ -19,6 +19,7 @@ export interface HistoryItem {
   text: string;
   langCode: string;
   voice: string;
+  customParams?: string;
   timestamp: number;
   audioContent: string;
 }

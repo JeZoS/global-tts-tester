@@ -12,6 +12,7 @@ const App: React.FC = () => {
   const [langCode, setLangCode] = useState<string>("en");
   const [voice, setVoice] = useState<string>(SUPPORTED_VOICES[0].name); // Default to first voice name
   const [apiUrl, setApiUrl] = useState<string>(DEFAULT_API_URL);
+  const [customParams, setCustomParams] = useState<string>("");
   
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,12 +48,22 @@ const App: React.FC = () => {
       return;
     }
 
+    let parsedParams: Record<string, any> = {};
+    if (customParams.trim()) {
+      try {
+        parsedParams = JSON.parse(customParams);
+      } catch (err) {
+        setError("Custom Parameters must be a valid JSON object.");
+        return;
+      }
+    }
+
     setIsLoading(true);
     setError(null);
     setCurrentAudio(null);
 
     try {
-      const result = await generateSpeech(text, langCode, voice, apiUrl);
+      const result = await generateSpeech(text, langCode, voice, apiUrl, parsedParams);
       setCurrentAudio(result.audioContent);
       
       // Add to history
@@ -61,6 +72,7 @@ const App: React.FC = () => {
         text: text,
         langCode: langCode,
         voice: voice,
+        customParams: customParams.trim(),
         timestamp: Date.now(),
         audioContent: result.audioContent
       };
@@ -70,7 +82,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [text, langCode, voice, apiUrl]);
+  }, [text, langCode, voice, apiUrl, customParams]);
 
   const handleClearHistory = () => {
     setHistory([]);
@@ -81,6 +93,7 @@ const App: React.FC = () => {
     setText(item.text);
     setLangCode(item.langCode);
     setVoice(item.voice || SUPPORTED_VOICES[0].name);
+    setCustomParams(item.customParams || "");
     setCurrentAudio(item.audioContent);
     setError(null);
   };
@@ -180,6 +193,19 @@ const App: React.FC = () => {
                   <div className="absolute bottom-3 right-3 text-xs text-slate-400 pointer-events-none">
                     {text.length} chars
                   </div>
+                </div>
+
+                <div className="relative">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Custom Parameters (JSON)
+                  </label>
+                  <textarea
+                    value={customParams}
+                    onChange={(e) => setCustomParams(e.target.value)}
+                    disabled={isLoading}
+                    placeholder='{"key": "value"}'
+                    className="block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm font-mono min-h-[80px] resize-y p-3 transition-all text-slate-600 bg-slate-50 focus:bg-white"
+                  />
                 </div>
 
                 {error && (
